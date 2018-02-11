@@ -3,6 +3,10 @@
 Scraping publishers websites to build a clean "bande dessinée" API!
 
 
+## Commands
+
+* crawl la boîte à bulles: `scrapy crawl laboiteabulles -o "data/laboiteabulles/$(date +%Y-%m-%d).jl"`
+
 ## List of publishers
 
 Source: https://fr.wikipedia.org/wiki/Liste_de_maisons_d%27%C3%A9dition_de_bande_dessin%C3%A9e
@@ -25,7 +29,7 @@ Source: https://fr.wikipedia.org/wiki/Liste_de_maisons_d%27%C3%A9dition_de_bande
 | Bheol                    | http://www.b-heol.com                              | France   | Ouvrages en breton        |
 | BDMusic                  | https://www.difymusic.com/bdmusic/                 | France   |                           |
 | Bliss Comics             | http://www.bliss-comics.com/                       | France   |                           |
-| La Boîte à bulles        | http://www.la-boite-a-bulles.com/                  | France   |                           |
+| La Boîte à bulles        | http://www.la-boite-a-bulles.com/                  | France   | OK!                       |
 | Çà et là                 | http://www.caetla.fr/                              | France   |                           |
 | Café Creed               | http://www.cafe-creed.com                          | France   |                           |
 | La Cafetière             | http://www.lacafetiere.org                         | France   |                           |
