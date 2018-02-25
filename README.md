@@ -41,6 +41,7 @@ Source: https://fr.wikipedia.org/wiki/Liste_de_maisons_d%27%C3%A9dition_de_bande
 | Café Creed                 | http://www.cafe-creed.com                            | France     |          |                             |
 | La Cafetière               | http://www.lacafetiere.org                           | France     |          |                             |
 | Cambourakis                | http://www.cambourakis.com                           | France     |          |                             |
+| Casterman                  | http://www.casterman.com                             | France     |          |                             |
 | Centre du Monde            | https://www.lecridumargouillat.re/                   | France     |          | La Réunion                  |
 | Éditions de la Cerise      | https://www.editionsdelacerise.com                   | France     |          |                             |
 | Le Cherche midi            | https://www.lisez.com                                | France     |          |                             |
@@ -49,11 +50,11 @@ Source: https://fr.wikipedia.org/wiki/Liste_de_maisons_d%27%C3%A9dition_de_bande
 | Cornélius                  | https://www.cornelius.fr/                            | France     |          | Site flash                  |
 | Dargaud                    | http://www.dargaud.com/                              | France     |          |                             |
 | Dark Horse Comics          | https://www.darkhorse.com/                           | France     |          |                             |
-| Delcourt                   | https://www.editions-delcourt.fr/                    | France     |          |                             |
+| Delcourt                   | https://www.editions-delcourt.fr/                    | France     | ✔        |                             |
 | Éditions Denoël            | http://www.denoel.fr/                                | France     |          | Romans grpahiques           |
 | Des bulles dans l'océan    | http://www.des-bulles-dans-l-ocean.com/              | France     |          | La Réunion                  |
 | Des ronds dans l'O         | http://www.desrondsdanslo.com/                       | France     |          |                             |
-| Dupuis                     | https://www.dupuis.com                               | France     |          |                             |
+| Dupuis                     | https://www.dupuis.com                               | France     | ✔        |                             |
 | Éditions de la Gouttière   | http://editionsdelagouttiere.com/                    | France     |          |                             |
 | Éditions du Triomphe       | http://www.editionsdutriomphe.fr/                    | France     |          |                             |
 | Emmanuel Proust éditions   | http://www.epeditions.com/                           | France     |          |                             |
