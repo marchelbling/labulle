@@ -6,6 +6,8 @@ import scrapy
 from bs4 import BeautifulSoup
 
 DIGITS = re.compile('\d+')
+# FIXMEs:
+# http://www.akileos.fr/catalogue/o-sensei
 
 def to_date_month(month):
     return {
@@ -127,16 +129,39 @@ class AkileosSpider(scrapy.Spider):
 
         blob['genre'] = [genre.strip().lower() for genre in blob.get('Genre', '').split(',')]
 
+        try:
+            samples = [page.img['src'] for page in soup.find('div', id='flipbook').find_all('div', class_='page')]
+        except:
+            samples = []
+
+        title = soup.find('div', {'class': 'breadcrumbs'}).find_all('span',{'property':'name'})[-1].text
+        if blob.get('Série'):
+            try:
+                volume, title = title.rsplit(' – ', 1)
+            except ValueError:
+                try:
+                    title, volume = title.rsplit(', ', 1)
+                except ValueError:
+                    volume = None
+
+            try:
+                volume = int(volume.rsplit('T.', 1)[-1])
+            except:
+                volume = None
+        else:
+            volume = None
+
         # response
         yield {
             'status': 'ok',
             'publisher': 'Akileos',
             'url': response.url,
-            'title': soup.find('div', {'class': 'breadcrumbs'}).find_all('span',{'property':'name'})[-1].text,
+            'title': title.strip(),
+            'series': blob.get('Série'),
+            'volume': volume,
             'summary': soup.find('h4', string='Résumé').find_next().text.strip(),
             'cover': soup.find('div',{'class': 'cover'}).a['href'],
-            'samples': [],
-            'series': blob.get('Série'),
+            'samples': samples,
             'illustrators': peoplify(blob, from_keys=['Dessinateurs', 'Dessinatrices', 'Dessinateur', 'Dessinatrice']),
             'writers': peoplify(blob, from_keys=['Scénaristes', 'Scénariste']),
             'authors': peoplify(blob, from_keys=['Auteurs', 'Auteur']),
