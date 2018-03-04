@@ -87,8 +87,13 @@ class DupuisSpider(scrapy.Spider):
                 details['pages'] = int(line.split(' - ', 1)[1].split('pages')[0].strip())
                 details['black_and_white'] = 'couleurs' not in line
             else:
-                key, value = line.split(':', 1)
-                details[key.strip()] = value.strip()
+                try:
+                    key, value = line.split(':', 1)
+                except ValueError:
+                    print("Error: could not split line {}".format(line))
+                    pass
+                else:
+                    details[key.strip()] = value.strip()
 
 
         summary = soup.find('div', class_='dp-album-resume').text
