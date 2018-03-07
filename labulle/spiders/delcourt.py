@@ -103,7 +103,6 @@ class DelcourtSpider(scrapy.Spider):
 
         # response
         yield {
-            'status': 'ok',
             'publisher': 'Delcourt',
             'url': response.url,
             'title': titlify(details.h1.text.strip()),

@@ -114,7 +114,6 @@ class DupuisSpider(scrapy.Spider):
 
         # response
         yield {
-            'status': 'ok',
             'publisher': 'Dupuis',
             'url': response.url,
             'title': title,

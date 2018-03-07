@@ -153,7 +153,6 @@ class AkileosSpider(scrapy.Spider):
 
         # response
         yield {
-            'status': 'ok',
             'publisher': 'Akileos',
             'url': response.url,
             'title': title.strip(),

@@ -142,7 +142,6 @@ class LaBoiteABulleSpider(scrapy.Spider):
 
             # response
             yield {
-                'status': 'ok',
                 'publisher': 'La Boite à Bulle',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,
