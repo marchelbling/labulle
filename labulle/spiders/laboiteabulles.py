@@ -42,7 +42,7 @@ def extract_int(string):
 
 
 class LaBoiteABulleSpider(scrapy.Spider):
-    name = 'laboiteabulle'
+    name = 'laboiteabulles'
     base_url = 'http://www.la-boite-a-bulles.com'
     allowed_domains = ['la-boite-a-bulles.com']
     custom_settings = {
@@ -142,6 +142,7 @@ class LaBoiteABulleSpider(scrapy.Spider):
 
             # response
             yield {
+                'objectID': parse_ean(blob),
                 'publisher': 'La Boite à Bulle',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,

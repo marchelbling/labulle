@@ -114,6 +114,7 @@ class DupuisSpider(scrapy.Spider):
 
         # response
         yield {
+            'objectID': details.get('isbn'),
             'publisher': 'Dupuis',
             'url': response.url,
             'title': title,

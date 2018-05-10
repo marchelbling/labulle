@@ -101,8 +101,11 @@ class DelcourtSpider(scrapy.Spider):
                         return tokens[1][1:-1] + ' ' + tokens[0]
             return title
 
+        isbn = details.find('span', class_='isbn').text
+
         # response
         yield {
+            'objectID': isbn,
             'publisher': 'Delcourt',
             'url': response.url,
             'title': titlify(details.h1.text.strip()),
@@ -112,7 +115,7 @@ class DelcourtSpider(scrapy.Spider):
             'series': series,
             'date': '-'.join(details.find('span', class_='published_at').text.strip().split(': ')[-1].split('/')[::-1]),
             'price': price,
-            'isbn': details.find('span', class_='isbn').text,
+            'isbn': isbn,
             'illustrators': peoplify(meta.get('Illustrateur', meta.get('Dessinateur', '')).split(',')),
             'writers': peoplify(meta.get('Scénariste', '').split(',')),
             'black_and_white': meta.get('Coloriste') is None,

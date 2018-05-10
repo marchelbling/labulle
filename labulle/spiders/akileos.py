@@ -153,6 +153,7 @@ class AkileosSpider(scrapy.Spider):
 
         # response
         yield {
+            'objectID': blob.get('ean'),
             'publisher': 'Akileos',
             'url': response.url,
             'title': title.strip(),
