@@ -16,9 +16,11 @@ trap terminate_screen EXIT
 function scrape {
     # lowercase
     local scraper="$( echo "${1}" | tr '[:upper:]' '[:lower:]' )"
-    scrapy crawl ${scraper} -o "data/${scraper}/$(date +%Y-%m-%d).jl" >data/${scraper}/last.log 2>&1
-    git add "data/${scraper}" && git commit -m "Update ${scraper} data" && git push origin master
+    local jl="data/${scraper}/$(date +%Y-%m-%d).jl"
+    local json="data/${scraper}/$(date +%Y-%m-%d).json"
+    scrapy crawl ${scraper} -o "${jl}" >data/${scraper}/last.log 2>&1
+    ./jl2json.py "${jl}" "${json}" && rm "${jl}"
+    git add "${json}" && git commit -m "Update ${scraper} data" && git push origin master
 }
-
 
 scrape "$@"
