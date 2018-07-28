@@ -109,7 +109,7 @@ class DelcourtSpider(scrapy.Spider):
             'publisher': 'Delcourt',
             'url': response.url,
             'title': titlify(details.h1.text.strip()),
-            'summary': soup.find('div', class_='resume').text.replace('\n', '').replace('\t', '').replace('\r', '').strip(),
+            'summary': soup.find('div', class_='resume').text.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
             'cover': soup.find('div', class_='visual').a['href'],
             'samples': samples,
             'series': series,

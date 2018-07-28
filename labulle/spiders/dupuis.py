@@ -120,7 +120,7 @@ class DupuisSpider(scrapy.Spider):
             'title': title,
             'volume': volume,
             'series': series if self.is_series else None,
-            'summary': summary,
+            'summary': summary.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
             'cover': cover,
             'samples': [cover.replace('couv', 'page{}'.format(idx)) for idx in range(5, 10)],
             'pages': details.get('pages'),

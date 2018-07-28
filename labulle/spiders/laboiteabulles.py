@@ -146,7 +146,7 @@ class LaBoiteABulleSpider(scrapy.Spider):
                 'publisher': 'La Boite à Bulle',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,
-                'summary': summary.replace('\n', '').replace('\r', '').replace('\t', ''),
+                'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' '),
                 'cover': cover,
                 'samples': samples,
                 'series': response.meta.get('series', None),

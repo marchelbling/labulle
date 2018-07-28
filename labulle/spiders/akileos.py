@@ -159,7 +159,7 @@ class AkileosSpider(scrapy.Spider):
             'title': title.strip(),
             'series': blob.get('Série'),
             'volume': volume,
-            'summary': soup.find('h4', string='Résumé').find_next().text.strip(),
+            'summary': soup.find('h4', string='Résumé').find_next().text.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
             'cover': soup.find('div',{'class': 'cover'}).a['href'],
             'samples': samples,
             'illustrators': peoplify(blob, from_keys=['Dessinateurs', 'Dessinatrices', 'Dessinateur', 'Dessinatrice']),
