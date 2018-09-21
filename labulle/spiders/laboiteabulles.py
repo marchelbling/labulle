@@ -105,7 +105,10 @@ class LaBoiteABulleSpider(scrapy.Spider):
 
         def parse_price(blob):
             lines = [line for line in blob if '€' in line]
-            return ''.join(lines).split('€')[0].strip().replace(',00', '').replace(',', '.') + '€'
+            return {
+                'amount': float(''.join(lines).split('€')[0].strip().replace(',00', '').replace(',', '.')),
+                'currency': 'eur'
+            }
 
         def parse_pages(blob):
             lines = [line for line in blob if 'pages' in line]

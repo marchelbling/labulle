@@ -78,9 +78,12 @@ class DelcourtSpider(scrapy.Spider):
             website = None
 
         try:
-            price = soup.find('div', class_='prices').span.text.replace(' ', '')
+            price = {
+                'amount': float(soup.find('div', class_='prices').span.text.replace(' ', '').replace('€', '')),
+                'currency': 'eur'
+            }
         except:
-            price = None
+            price = {}
 
         def peoplify(names):
             for i, name in enumerate(names):

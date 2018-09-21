@@ -123,9 +123,12 @@ class AkileosSpider(scrapy.Spider):
             pass
 
         try:
-            blob['price'] = blob['price'].split('€')[0].strip().replace(',00', '').replace(',', '.') + '€'
+            blob['price'] = {
+                'amount': float(blob['price'].split('€')[0].strip().replace(',00', '').replace(',', '.')),
+                'currency': 'eur',
+            }
         except:
-            pass
+            blob['price'] = {}
 
         blob['genre'] = [genre.strip().lower() for genre in blob.get('Genre', '').split(',')]
 

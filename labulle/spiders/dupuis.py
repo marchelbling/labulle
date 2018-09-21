@@ -125,7 +125,10 @@ class DupuisSpider(scrapy.Spider):
             'samples': [cover.replace('couv', 'page{}'.format(idx)) for idx in range(5, 10)],
             'pages': details.get('pages'),
             'date': details.get('date'),
-            'price': details.get('pvp', '').replace('eur', '€'),
+            'price': {
+                'amount': details.get('pvp', '').replace('eur', ''),
+                'currency': 'eur'
+            },
             'isbn': details.get('isbn'),
             'illustrators': self.authors.get('dessin', []),
             'writers': self.authors.get('scénario', []),
