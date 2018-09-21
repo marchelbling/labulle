@@ -4,6 +4,7 @@ import argparse
 import copy
 import datetime
 import json
+import math
 import sys
 
 from algoliasearch import algoliasearch
@@ -40,6 +41,16 @@ def parse_records(filepath):
     return records
 
 
+def fetch_records(object_ids, index):
+    records = []
+    batch = 1000
+    n = math.ceil(len(object_ids or []) / batch)
+    for i in range(n+1):
+        first = i * 1000
+        records.extend(filter(None, index.get_objects(object_ids[first:first+batch]).get('results', [])))
+    return records
+
+
 def get_index(app, key, index):
     client = algoliasearch.Client(app, key)
     return client.init_index(index)
@@ -67,7 +78,7 @@ if __name__ == '__main__':
     index = get_index(options.app, options.key, options.index)
 
     new_records = parse_records(options.data)
-    old_records = index.get_objects([r['objectID'] for r in new_records]).get('results', [])
+    old_records = fetch_records([r['objectID'] for r in new_records], index)
 
     diff = make_diff(old_records, new_records)
     res = index.save_objects(diff)
