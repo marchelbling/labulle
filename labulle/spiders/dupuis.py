@@ -18,7 +18,7 @@ class DupuisSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        collections = 'https://www.dupuis.com/catalogue/FR/recherche.html'
+        collections = 'catalogue/FR/recherche.html'
         yield scrapy.Request(url=urljoin(self.__class__.base_url, collections), callback=self.parse_collections)
 
     def parse_collections(self, response):
