@@ -134,7 +134,7 @@ class DupuisSpider(scrapy.Spider):
             'writers': self.authors.get('scénario', []),
             'website': getattr(self, 'series_url', None),
             'black_and_white': details.get('black_and_white'),
-            'age': details.get('age du lectorat'),
+            'age': int(details.get('age du lectorat').replace('+', '')),
             'genre': details.get('genre', []),
             'book': details.get('book'),
         }
