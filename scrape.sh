@@ -21,6 +21,7 @@ function scrape {
     local jl="data/${scraper}.jl"
 
     # scrape
+    rm -f "${jl}"
     scrapy crawl ${scraper} -o "${jl}" >data/${scraper}.log 2>&1
 
     # build & upload diff

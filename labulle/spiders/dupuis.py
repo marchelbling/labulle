@@ -18,21 +18,23 @@ class DupuisSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        collections = 'catalogue/FR/recherche.html'
-        yield scrapy.Request(url=urljoin(self.__class__.base_url, collections), callback=self.parse_collections)
+        catalogue = 'catalogue/FR/recherche.html'
+        yield scrapy.Request(url=urljoin(self.__class__.base_url, catalogue), callback=self.parse_collections)
 
     def parse_collections(self, response):
         soup = BeautifulSoup(response.text, 'lxml')
         for a in soup.find_all('a', class_='dp-cat-voirtout-mobile'):
             url = urljoin(self.__class__.base_url, a['href'])
+            # go to collection full list i.e. "Toutes"
             yield scrapy.Request(url='/0/'.join(url.rsplit('/', 1)), callback=self.parse_collection)
 
     def parse_collection(self, response):
         # e.g. https://www.dupuis.com/catalogue/FR/c/vl/1426/0/dupuis-premiere-bd.html
         soup = BeautifulSoup(response.text, 'lxml')
-        for item in soup.find_all('div', class_='dp-cat-series-ligne-serie'):
+        for div in soup.find_all('div', class_='dp-cat-series-ligne'):
             try:
-                yield scrapy.Request(url=urljoin(self.__class__.base_url, item.a['href']), callback=self.parse_series)
+                a = div.find('div', class_='dp-cat-series-ligne-serie').a['href']
+                yield scrapy.Request(url=urljoin(self.__class__.base_url, a['href']), callback=self.parse_series)
             except:
                 pass  # ignore "Séries" div (first line)
 
@@ -137,4 +139,6 @@ class DupuisSpider(scrapy.Spider):
             'age': int(details.get('age du lectorat').replace('+', '')),
             'genre': details.get('genre', []),
             'book': details.get('book'),
+            'width': details.get('width'),
+            'height': details.get('height'),
         }
