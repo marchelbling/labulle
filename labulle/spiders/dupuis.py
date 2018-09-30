@@ -33,7 +33,7 @@ class DupuisSpider(scrapy.Spider):
         soup = BeautifulSoup(response.text, 'lxml')
         for div in soup.find_all('div', class_='dp-cat-series-ligne'):
             try:
-                a = div.find('div', class_='dp-cat-series-ligne-serie').a['href']
+                a = div.find('div', class_='dp-cat-series-ligne-serie').a
                 yield scrapy.Request(url=urljoin(self.__class__.base_url, a['href']), callback=self.parse_series)
             except:
                 pass  # ignore "Séries" div (first line)
@@ -41,34 +41,49 @@ class DupuisSpider(scrapy.Spider):
     def parse_series(self, response):
         # e.g. https://www.dupuis.com/seriebd/petit-poilu/1356
         soup = BeautifulSoup(response.text, 'lxml')
-        items = soup.find_all('div', class_='dp-ser-slide-cadre')
 
-        if not hasattr(self, 'is_series'):
-            self.is_series = len(items) > 1
+        authors = {}
+        for div in soup.find_all('div', 'dp-auteur'):
+            kinds = div.find('div', class_='dp-auteur-metier').text.lower().split(' et ')
+            name = div.find('h4', class_='dp-auteur-nom').text
+            for kind in kinds:
+                authors.setdefault(kind.strip(), []).append(name.strip())
 
-        self.authors = {}
-        for kinds, name in [(author.find('div', 'dp-auteur-metier').text.lower(), author.find('h4', 'dp-auteur-nom').text) for author in soup.find_all('div', 'dp-auteur')]:
-            for kind in kinds.split(' et '):
-                self.authors.setdefault(kind.strip(), []).append(name.strip())
-
-        if self.is_series:
-            self.series_url = response.url
-            series_id = response.url.rsplit('/', 1)[-1]
-            yield scrapy.Request(url='https://www.dupuis.com/servlet/jpcatalogue?pgm_servlet=view_serie_suite_albums&serie_id={id}&nombre_slide=5&page={page}'\
-                                     .format(series_id, 1), callback=self.parse_series_page)
+        # https://doc.scrapy.org/en/latest/topics/request-response.html#topics-request-response-ref-request-callback-arguments
+        divs = soup.find_all('div', class_='dp-ser-slide-cadre')
+        if len(divs) == 1:
+            request =  scrapy.Request(url=urljoin(self.__class__.base_url, divs[0].a['href']),
+                                      callback=self.parse)
+            request.meta['writers'] = authors.get('scénario')
+            request.meta['illustrators'] = authors.get('dessin')
+            yield request
         else:
-            yield scrapy.Request(url=urljoin(self.__class__.base_url, items[0].a['href']),
-                                 callback=self.parse)
+            # need to list all elements in the series
+            series_id = response.url.rsplit('/', 1)[-1]
+            request = scrapy.Request(url='https://www.dupuis.com/servlet/jpcatalogue?pgm_servlet=view_serie_suite_albums&serie_id={id}&nombre_slide=5&page={page}'.format(id=series_id, page=1),
+                                     callback=self.parse_series_page)
+            request.meta['writers'] = authors.get('scénario')
+            request.meta['illustrators'] = authors.get('dessin')
+            request.meta['series_url'] = response.url
+            yield request
 
     def parse_series_page(self, response):
         soup = BeautifulSoup(response.text, 'lxml')
-        items = soup.find_all('div', class_='dp-album-couv-ratio')
-        for item in items:
-            yield scrapy.Request(url=urljoin(self.__class__.base_url, item.a['href']), callback=self.parse)
+        divs = soup.find_all('div', class_='dp-album-couv-ratio')
+        for div in divs:
+            request = scrapy.Request(url=urljoin(self.__class__.base_url, div.a['href']), callback=self.parse)
+            request.meta['writers'] = response.meta.get('writers')
+            request.meta['illustrators'] = response.meta.get('illustrators')
+            request.meta['series_url'] = response.meta.get('series_url')
+            yield request
 
-        if len(items) >= 5:
+        if len(divs) >= 5:
             url, page = response.url.rsplit('=', 1)
-            yield scrapy.Request(url='='.join(url, int(page) + 1), callback=self.parse_series_page)
+            request = scrapy.Request(url='='.join([url, str(int(page) + 1)]), callback=self.parse_series_page)
+            request.meta['writers'] = response.meta.get('writers')
+            request.meta['illustrators'] = response.meta.get('illustrators')
+            request.meta['series_url'] = response.meta.get('series_url')
+            yield request
 
     def parse(self, response):
         soup = BeautifulSoup(response.text, 'lxml')
@@ -121,20 +136,20 @@ class DupuisSpider(scrapy.Spider):
             'url': response.url,
             'title': title,
             'volume': volume,
-            'series': series if self.is_series else None,
+            'series': series if response.meta.get('series_url') else None,
             'summary': summary.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
             'cover': cover,
             'samples': [cover.replace('couv', 'page{}'.format(idx)) for idx in range(5, 10)],
             'pages': details.get('pages'),
             'date': details.get('date'),
             'price': {
-                'amount': details.get('pvp', '').replace('eur', ''),
+                'amount': float(details.get('pvp', '').replace('eur', '')),
                 'currency': 'eur'
             },
             'isbn': details.get('isbn'),
-            'illustrators': self.authors.get('dessin', []),
-            'writers': self.authors.get('scénario', []),
-            'website': getattr(self, 'series_url', None),
+            'illustrators': response.meta.get('illustrators', []),
+            'writers': response.meta.get('writers', []),
+            'website': response.meta.get('series_url'),
             'black_and_white': details.get('black_and_white'),
             'age': int(details.get('age du lectorat').replace('+', '')),
             'genre': details.get('genre', []),
