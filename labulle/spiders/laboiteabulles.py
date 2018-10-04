@@ -43,7 +43,7 @@ def extract_int(string):
 
 class LaBoiteABulleSpider(scrapy.Spider):
     name = 'laboiteabulles'
-    base_url = 'http://www.la-boite-a-bulles.com'
+    base_url = 'https://www.la-boite-a-bulles.com'
     allowed_domains = ['la-boite-a-bulles.com']
     custom_settings = {
         'DOWNLOAD_DELAY': 0.15,
