@@ -25,7 +25,7 @@ function scrape {
     scrapy crawl ${scraper} -o "${jl}" >data/${scraper}.log 2>&1
 
     # build & upload diff
-    ./algdiff.py --app "IQKQPU4IQQ" --index "labulle" --key "${API_KEY}" --data "${jl}" >data/${scraper}.diff 2>data/${scraper}.err
+    ./algdiff.py --app "${MY_APPID}" --index "nomdunebulle" --key "${API_KEY}" --data "${jl}" >data/${scraper}.diff 2>data/${scraper}.err
 
     # commit data
     git add "data/${scraper}.*" && git commit -m "update ${scraper} data" && git push origin master
