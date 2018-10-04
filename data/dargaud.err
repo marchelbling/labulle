@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "./algdiff.py", line 81, in <module>
+    old_records = fetch_records([r['objectID'] for r in new_records], index)
+  File "./algdiff.py", line 50, in fetch_records
+    records.extend(filter(None, index.get_objects(object_ids[first:first+batch]).get('results', [])))
+  File "/home/marc/.local/lib/python3.6/site-packages/algoliasearch/index.py", line 166, in get_objects
+    return self.client._req(True, path, 'POST', request_options, data=data)
+  File "/home/marc/.local/lib/python3.6/site-packages/algoliasearch/client.py", line 736, in _req
+    return self._transport.req(is_search, path, meth, params, data, request_options)
+  File "/home/marc/.local/lib/python3.6/site-packages/algoliasearch/transport.py", line 176, in req
+    raise e
+  File "/home/marc/.local/lib/python3.6/site-packages/algoliasearch/transport.py", line 174, in req
+    return r(host, path, meth, timeout, params, data, headers)
+  File "/home/marc/.local/lib/python3.6/site-packages/algoliasearch/transport.py", line 120, in _session_req
+    raise AlgoliaException(message)
+algoliasearch.helpers.AlgoliaException: Invalid Application-ID or API key
