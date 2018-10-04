@@ -104,7 +104,7 @@ class DelcourtSpider(scrapy.Spider):
                         return tokens[1][1:-1] + ' ' + tokens[0]
             return title
 
-        isbn = details.find('span', class_='isbn').text
+        isbn = details.find('span', class_='isbn').text.replace('-', '')
 
         # response
         yield {
