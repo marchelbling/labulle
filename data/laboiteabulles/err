@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "./algdiff.py", line 80, in <module>
+    new_records = parse_records(options.data)
+  File "./algdiff.py", line 31, in parse_records
+    with open(filepath, encoding='utf8') as data:
+FileNotFoundError: [Errno 2] No such file or directory: 'data/laboiteabulles/jl'
