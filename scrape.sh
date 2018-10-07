@@ -22,10 +22,19 @@ function scrape {
     mkdir -p "data/${scraper}"
 
     # scrape
-    scrapy crawl ${scraper} -t jl -o "data/${scraper}/jl" >data/${scraper}/log 2>&1
+    scrapy crawl ${scraper} -t jl -o "data/${scraper}/jl" >>data/${scraper}/log 2>&1
 
-    # build & upload diff
-    ./algdiff.py --app "${MY_APPID}" --index "nomdunebulle" --key "${API_KEY}" --data "data/${scraper}/jl" >data/${scraper}/diff 2>data/${scraper}/err
+    # build diff
+    ./algdiff.py --app "${MY_APPID}" --index "nomdunebulle" --key "${API_KEY}" --data "data/${scraper}/jl" >data/${scraper}/diff 2>>data/${scraper}/err
+
+    # fetch cover/samples
+    ./dlsamples.py "data/${scraper}/diff"
+
+    # # enrich records from images
+    # ./enrich.py "data/${scraper}/diff"
+
+    #  upload enriched diff
+    ./algupload.py --app "${MY_APPID}" --index "nomdunebulle" --key "${API_KEY}" --data "data/${scraper}/jl" >>data/${scraper}/log 2>>data/${scraper}/err
 
     # commit data
     git add "data/${scraper}/*" && git commit -m "update ${scraper} data" && git push origin master

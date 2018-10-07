@@ -41,39 +41,9 @@ def parse_records(filepath):
     return records
 
 
-def fetch_records(object_ids, index):
-    records = []
-    batch = 1000
-    n = math.ceil(len(object_ids or []) / batch)
-    for i in range(n+1):
-        first = i * 1000
-        records.extend(filter(None, index.get_objects(object_ids[first:first+batch]).get('results', [])))
-    return records
-
-
 def get_index(app, key, index):
     client = algoliasearch.Client(app, key)
     return client.init_index(index)
-
-
-def make_diff(old_records, new_records):
-    diff = []
-    now = datetime.datetime.utcnow().strftime(ISO8601)
-    old = {r['objectID']: r for r in old_records}
-    new = {r['objectID']: r for r in new_records}
-
-    for oid, new_record in new.items():
-        if oid not in old:
-            new_record['created_at']= now
-            diff.append(new_record)
-        else:
-            old_record = old[oid]
-            if any(v != old_record.get(k) for k, v in new_record.items()):
-                r = copy.deepcopy(old_record)
-                r.update(new_record)
-                r['updated_at'] = now
-                diff.append(r)
-    return diff
 
 
 if __name__ == '__main__':
@@ -81,7 +51,5 @@ if __name__ == '__main__':
     index = get_index(options.app, options.key, options.index)
 
     new_records = parse_records(options.data)
-    old_records = fetch_records([r['objectID'] for r in new_records], index)
-
-    diff = make_diff(old_records, new_records)
-    sys.stdout.write('\n'.join(map(json.dumps, diff)))
+    res = index.save_objects(new_records)
+    print(res)
