@@ -90,12 +90,19 @@ class AkileosSpider(scrapy.Spider):
         values = list(filter(None,
                              map(lambda p: p.text.replace('\t', '').replace('\n', '').strip(),
                                  entry.find_all('p'))))
-        keys = [l.text for l in entry.find_all('label')]
+        values += [v.strip() for v in values.pop().replace("-", "–").split("–")]
 
+        keys = [l.text for l in entry.find_all('label') if ':' not in l.text]
         keys += ['book', 'dimensions', 'pages', 'ean', 'price']
-        values += values.pop().split(" – ")
+
+        if len(values) != len(keys):
+            raise Exception('Key/values mismatch')
 
         blob = dict(zip(keys, values))
+        for field in entry.find_all('label'):
+            if ':' in field.text:
+                key, value = field.text.split(':')
+                blob[key] = value
 
         try:
             width, height = blob.get('dimensions', '').split('×')
@@ -166,7 +173,7 @@ class AkileosSpider(scrapy.Spider):
             'cover': soup.find('div',{'class': 'cover'}).a['href'],
             'samples': samples,
             'illustrators': peoplify(blob, from_keys=['Dessinateurs', 'Dessinatrices', 'Dessinateur', 'Dessinatrice']),
-            'writers': peoplify(blob, from_keys=['Scénaristes', 'Scénariste']),
+            'writers': peoplify(blob, from_keys=['Scénaristes', 'Scénariste', 'Textes']),
             'authors': peoplify(blob, from_keys=['Auteurs', 'Auteur']),
             'ean': blob.get('ean'),
             'genre': blob.get('genre'),
