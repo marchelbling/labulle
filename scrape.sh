@@ -34,10 +34,10 @@ function scrape {
     # ./enrich.py "data/${scraper}/diff"
 
     #  upload enriched diff
-    ./algupload.py --data "data/${scraper}/jl" >>data/${scraper}/log 2>>data/${scraper}/err
+    # ./algupload.py --data "data/${scraper}/jl" >>data/${scraper}/log 2>>data/${scraper}/err
 
     # commit data
-    git add "data/${scraper}/*" && git commit -m "update ${scraper} data" && git push origin master
+    # git add "data/${scraper}/*" && git commit -m "update ${scraper} data" && git push origin master
 }
 
 scrape "$@"
