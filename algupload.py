@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import copy
-import datetime
 import json
-import math
+import os
 import sys
 
 from algoliasearch import algoliasearch
+from dotenv import load_dotenv
 
 
 ISO8601 = '%Y-%m-%dT%H:%M:%S'
@@ -15,9 +14,6 @@ ISO8601 = '%Y-%m-%dT%H:%M:%S'
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Update Algolia index from JSONLine data')
-    parser.add_argument('--app', type=str, required=True, help='Algolia Application ID')
-    parser.add_argument('--index', type=str, required=True, help='Algolia Index')
-    parser.add_argument('--key', type=str, required=True, help='Algolia API Key')
     parser.add_argument('--data', type=str, required=True, help='Path to new data')
     return parser.parse_args()
 
@@ -47,8 +43,9 @@ def get_index(app, key, index):
 
 
 if __name__ == '__main__':
+    load_dotenv()  # source .env
     options = parse_options()
-    index = get_index(options.app, options.key, options.index)
+    index = get_index(os.getenv("ALG_APP_ID"), os.getenv("ALG_API_KEY"), os.getenv("ALG_INDEX"))
 
     new_records = parse_records(options.data)
     res = index.save_objects(new_records)

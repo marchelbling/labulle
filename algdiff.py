@@ -5,9 +5,11 @@ import copy
 import datetime
 import json
 import math
+import os
 import sys
 
 from algoliasearch import algoliasearch
+from dotenv import load_dotenv
 
 
 ISO8601 = '%Y-%m-%dT%H:%M:%S'
@@ -15,9 +17,6 @@ ISO8601 = '%Y-%m-%dT%H:%M:%S'
 
 def parse_options():
     parser = argparse.ArgumentParser(description='Update Algolia index from JSONLine data')
-    parser.add_argument('--app', type=str, required=True, help='Algolia Application ID')
-    parser.add_argument('--index', type=str, required=True, help='Algolia Index')
-    parser.add_argument('--key', type=str, required=True, help='Algolia API Key')
     parser.add_argument('--data', type=str, required=True, help='Path to new data')
     return parser.parse_args()
 
@@ -77,8 +76,9 @@ def make_diff(old_records, new_records):
 
 
 if __name__ == '__main__':
+    load_dotenv()  # source .env
     options = parse_options()
-    index = get_index(options.app, options.key, options.index)
+    index = get_index(os.getenv("ALG_APP_ID"), os.getenv("ALG_API_KEY"), os.getenv("ALG_INDEX"))
 
     new_records = parse_records(options.data)
     old_records = fetch_records([r['objectID'] for r in new_records], index)
