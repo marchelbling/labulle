@@ -146,7 +146,7 @@ class LaBoiteABulleSpider(scrapy.Spider):
             # response
             yield {
                 'objectID': parse_ean(blob),
-                'publisher': 'La Boite à Bulle',
+                'publisher': 'La Boite à Bulles',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,
                 'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' '),
