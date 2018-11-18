@@ -137,11 +137,11 @@ class LaBoiteABulleSpider(scrapy.Spider):
             peoples = parse_peoples(soup)
             blob = [s.text.strip() for s in mention.find_all('span')] + [s.next_sibling.strip() for s in mention.find_all('br')]
 
-            summary = soup.find('p', class_='workShortBody').text
+            summary = soup.find('p', class_='workShortBody').text.strip()
             try:
                 summary +=  ' ' + soup.find('div', id='div_description2').find_all('p')[-1].text
             except:
-                summary +=  ' ' + soup.find('div', class_='box_main').text.strip()
+                summary +=  ' ' + soup.find('div', class_='box_main').text
 
             # response
             yield {
@@ -149,7 +149,7 @@ class LaBoiteABulleSpider(scrapy.Spider):
                 'publisher': 'La Boite à Bulles',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,
-                'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' '),
+                'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' ').strip(),
                 'cover': cover,
                 'samples': samples,
                 'series': response.meta.get('series', None),
