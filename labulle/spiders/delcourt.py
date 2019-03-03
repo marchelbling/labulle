@@ -42,7 +42,7 @@ class DelcourtSpider(scrapy.Spider):
     #                                        callback=self.parse_item)
 
     def start_requests(self):
-        collections = 'https://www.editions-delcourt.fr/bd/nos-collections-bd.html'
+        collections = 'https://www.editions-delcourt.fr/bd/liste-des-collections-bd.html'
         yield scrapy.Request(url=urljoin(self.__class__.base_url, collections), callback=self.parse_collections)
 
     def parse_collections(self, response):
