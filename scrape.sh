@@ -3,6 +3,7 @@
 # from https://unix.stackexchange.com/a/162150; hook to run the script in a screen session
 if [ -z "$STY" ];
 then
+    [ -n "$1" ] || ( echo "cannot use empty name"; exit 1 )
     exec screen -U -dm -S labulle-"${1}" /bin/bash "$0" "$@";
 fi
 
@@ -18,7 +19,6 @@ function scrape {
     local scraper="$( echo "${1}" | tr '[:upper:]' '[:lower:]' )"
 
     # clean data
-    rm -fr "data/${scraper}"
     mkdir -p "data/${scraper}"
 
     # scrape
