@@ -1,6 +1,6 @@
 GIT_HASH=$(shell git rev-parse --short HEAD)
 GIT_ROOT=$(shell git rev-parse --show-toplevel)
-PUBLISHERS=akileos dargaud delcourt dupuis laboiteabulles
+PUBLISHERS=akileos dargaud delcourt dupuis glenat laboiteabulles
 PUBLISHERS_SELECTED=$(if $(publisher),$(publisher),$(PUBLISHERS))
 
 # scrape all publishers.
