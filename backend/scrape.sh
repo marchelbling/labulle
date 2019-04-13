@@ -15,26 +15,40 @@ trap terminate_screen EXIT
 
 
 function scrape {
-    # lowercase
+    # lowercase input for resiliency
     local scraper="$( echo "${1}" | tr '[:upper:]' '[:lower:]' )"
 
-    # clean data
-    mkdir -p "data/${scraper}"
+    # source env
+    local root="$( git rev-parse --show-toplevel 2> /dev/null )"
+    [ -f "${root}/.env"] && . "${root}/.env" || echo "No ${root}/.env to source"
+
+    # fs layout
+    local scripts="${root}/backend/scripts"
+    local storage="${root}/data/img"
+    local folder="${root}/data/${scraper}"
+
+    local comics="${folder}/jl"
+    local diff="${folder}/diff"
+    local log="${folder}/log"
+    local err="${folder}/err"
+
+    mkdir -p "${folder}"
 
     # scrape
-    scrapy crawl ${scraper} -t jl -o "data/${scraper}/jl" >>data/${scraper}/log 2>&1
+    scrapy crawl ${scraper} -t jl -o "${comics}" >>"${log}" 2>&1
 
     # build diff
-    ./algdiff.py --data "data/${scraper}/jl" >data/${scraper}/diff 2>>data/${scraper}/err
+    # use diff=${comics} to perform a full dlsamples/algupload
+    ./${scripts}/algdiff.py --data "${comics}" >"${diff}" 2>>"${err}"
 
     # fetch cover/samples
-    ./dlsamples.py "data/${scraper}/diff"
+    ./${scripts}/dlsamples.py "${diff}" "${storage}"
 
      # upload diff
-    ./algupload.py --data "data/${scraper}/diff" >>data/${scraper}/log 2>>data/${scraper}/err
+    ./${scripts}/algupload.py --data "${diff}" >>"${log}" 2>>"${err}"
 
     # commit data
-    git add "data/${scraper}/*" && git commit -m "update ${scraper} data" && git push origin master
+    git add "${folder}" && git commit -m "update ${scraper} data" && git push origin master
 }
 
 scrape "$@"

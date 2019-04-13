@@ -6,8 +6,8 @@ import requests
 import sys
 
 
-def path(uid, name):
-    return os.path.join('data', 'img', uid, name)
+def path(storage, uid, name):
+    return os.path.join(storage, uid, name)
 
 
 def download_asset(url, filepath):
@@ -21,13 +21,13 @@ def download_asset(url, filepath):
             f.write(resp.content)
 
 
-def download(comic):
+def download(comic, storage):
     try:
         uid = comic['objectID']
         mkdir(path(uid, ''))
         download_asset(comic.get('cover', ''), path(uid, 'cover'))
         for i,sample in enumerate(comic.get('samples', [])):
-            download_asset(sample, path(uid, 'sample_{}'.format(i)))
+            download_asset(sample, path(storage, uid, 'sample_{}'.format(i)))
     except:
         pass
 
@@ -41,9 +41,10 @@ def mkdir(path):
 
 if __name__ == '__main__':
     src = sys.argv[1]
+    storage = sys.argv[2]
 
     with open(src) as lines:
         for line in lines:
             comic = json.loads(line)
-            download(comic)
+            download(comic, storage)
 
