@@ -20,7 +20,7 @@ function scrape {
 
     # source env
     local root="$( git rev-parse --show-toplevel 2> /dev/null )"
-    [ -f "${root}/.env"] && . "${root}/.env" || echo "No ${root}/.env to source"
+    [ -f "${root}/.env" ] && . "${root}/.env" || echo "No ${root}/.env to source"
 
     # fs layout
     local scripts="${root}/backend/scripts"
