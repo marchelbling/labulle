@@ -164,23 +164,26 @@ class AkileosSpider(scrapy.Spider):
         # response
         yield {
             'objectID': blob.get('ean'),
+            'ean': blob.get('ean'),
             'publisher': 'Akileos',
             'url': response.url,
             'title': title.strip(),
             'series': blob.get('Série'),
             'volume': volume,
             'summary': soup.find('h4', string='Résumé').find_next().text.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
-            'cover': soup.find('div',{'class': 'cover'}).a['href'],
-            'samples': samples,
             'illustrators': peoplify(blob, from_keys=['Dessinateurs', 'Dessinatrices', 'Dessinateur', 'Dessinatrice']),
             'writers': peoplify(blob, from_keys=['Scénaristes', 'Scénariste', 'Textes']),
             'authors': peoplify(blob, from_keys=['Auteurs', 'Auteur']),
-            'ean': blob.get('ean'),
-            'genre': blob.get('genre'),
+            'cover': soup.find('div',{'class': 'cover'}).a['href'],
+            'samples': samples,
             'date': blob.get('date'),
-            'book': blob.get('book'),
-            'pages': blob.get('pages'),
-            'width': blob.get('width'),
-            'height': blob.get('height'),
-            'price': blob.get('price'),
+
+            'misc': {
+                'book': blob.get('book'),
+                'pages': blob.get('pages'),
+                'tags': [blob.get('genre')],
+                'width': blob.get('width'),
+                'height': blob.get('height'),
+                'price': blob.get('price'),
+            }
         }

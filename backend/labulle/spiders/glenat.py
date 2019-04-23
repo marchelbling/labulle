@@ -49,7 +49,7 @@ class GlenatSpider(scrapy.Spider):
 
     def parse(self, response):
         soup = BeautifulSoup(response.text, 'lxml')
-        book = soup.find('div', about=resp.url.replace(self.__class__.base_url, ''))
+        book = soup.find('div', about=response.url.replace(self.__class__.base_url, ''))
         infos = soup.find('div', class_='group-infos')
 
         # soup.find('div', class_='field-name-hw-livre-titre-couv').text
@@ -78,7 +78,7 @@ class GlenatSpider(scrapy.Spider):
             cover = None
 
         try:
-            categories = [x.text for x in infos.find('div', class_='field-name-hw-livre-collections').find_all('div', class_='field-items')]
+            categories = [x.text.lower() for x in infos.find('div', class_='field-name-hw-livre-collections').find_all('div', class_='field-items')]
         except:
             pass
 
@@ -89,6 +89,11 @@ class GlenatSpider(scrapy.Spider):
 
         try:
             pages = int(infos.find('div', class_='field-name-hw-livre-nb-pages').find('div', class_='field-items').text)
+        except:
+            pass
+
+        try:
+            ean = infos.find('div', class_='field-name-hw-livre-ean').find('div', class_='field-item').text
         except:
             pass
 
@@ -105,21 +110,24 @@ class GlenatSpider(scrapy.Spider):
         # response
         yield {
             'objectID': ean,
+            'ean': ean,
             'publisher': 'Glénat',
             'url': response.url,
             'title': title,
-            'summary': soup.find('div', class_='field-name-hw-presentation-editoriale').text,
-            'cover': cover,
-            'samples': [],
             'series': series,
             'volume': volume,
-            'category': categories,
+            'summary': soup.find('div', class_='field-name-hw-presentation-editoriale').text,
             'date': date,
-            'pages': pages,
-            'price': {},  # cannot extract price; seems that the price is generated from js
-            'ean': ean,
             'illustrators': illustrators,
             'writers': writers,
-            'website': website
+            'cover': cover,
+            'samples': [],
+
+            'misc': {
+                'tags': categories,
+                'pages': pages,
+                'website': website,
+                'price': {},  # cannot extract price; seems that the price is generated from js
+            }
         }
 

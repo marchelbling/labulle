@@ -82,7 +82,7 @@ class LaBoiteABulleSpider(scrapy.Spider):
                 return dict(zip([s.text for s in authors.find_all('span')],
                                 [s.text for s in authors.find_all('a')]))
             else:
-                authors = soup.find('a', class_='authors').text.replace('(Scénario et dessin)', '')
+                authors = soup.find('a', class_='authors').text.replace('(Scénario et dessin)', '').replace('(Scénario, dessin et couleurs)', '')
                 return {
                     'Dessin': authors,
                     'Scénario': authors,
@@ -112,7 +112,10 @@ class LaBoiteABulleSpider(scrapy.Spider):
 
         def parse_pages(blob):
             lines = [line for line in blob if 'pages' in line]
-            return ''.join(lines).split('pages')[0].strip()
+            try:
+                return int(''.join(lines).split('pages')[0].strip())
+            except:
+                return None
 
         def parse_series(soup):
             lines = [line for line in blob if 'pages' in line]
@@ -146,18 +149,22 @@ class LaBoiteABulleSpider(scrapy.Spider):
             # response
             yield {
                 'objectID': parse_ean(blob),
+                'ean': parse_ean(blob),
                 'publisher': 'La Boite à Bulles',
                 'url': response.url,
                 'title': soup.find('div', id='page_album').h1.text,
-                'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' ').strip(),
-                'cover': cover,
-                'samples': samples,
                 'series': response.meta.get('series', None),
+                'volume': None,
+                'summary': summary.replace('\n', ' ').replace('\r', '').replace('\t', ' ').strip(),
                 'date': parse_date(blob),
-                'book': parse_book(blob),
-                'pages': parse_pages(blob),
-                'ean': parse_ean(blob),
-                'price': parse_price(blob),
                 'illustrators': [people.strip() for people in peoples.get('Dessin', '').split(', ')],
                 'writers': [people.strip() for people in peoples.get('Scénario', '').split(', ')],
+                'cover': cover,
+                'samples': samples,
+
+                'misc': {
+                    'pages': parse_pages(blob),
+                    'price': parse_price(blob),
+                    'book': parse_book(blob),
+                }
             }

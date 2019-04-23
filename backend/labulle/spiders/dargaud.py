@@ -151,7 +151,7 @@ class DargaudSpider(scrapy.Spider):
             return authors
 
         @on_exception(None)
-        def parse_genre(soup):
+        def parse_genres(soup):
             genres = []
             for li in soup.find('div', class_='genre').find_all('li'):
                 genres.extend([g.lower().strip() for g in li.text.split('/')])
@@ -168,23 +168,26 @@ class DargaudSpider(scrapy.Spider):
         # response
         yield {
             'objectID': ean,
+            'ean': ean,
             'publisher': 'Dargaud',
             'url': response.url,
             'title': title,
-            'volume': volume,
             'series': series,
+            'volume': volume,
             'summary': parse_summary(soup),
-            'cover': parse_cover(soup),
-            'samples': parse_samples(soup),
-            'pages': parse_pages(soup),
             'date': parse_date(soup),
-            'price': parse_price(soup),
-            'ean': ean,
             'illustrators': illustrators[0] if illustrators else [],
             'writers': writers[0] if writers else [],
-            'website': parse_series_url(soup),
-            'age': parse_age(soup),
-            'genre': parse_genre(soup),
-            'width': width,
-            'height': height,
+            'cover': parse_cover(soup),
+            'samples': parse_samples(soup),
+
+            'misc': {
+                'pages': parse_pages(soup),
+                'price': parse_price(soup),
+                'website': parse_series_url(soup),
+                'tags': parse_genres(soup),
+                'age': parse_age(soup),
+                'width': width,
+                'height': height,
+            }
         }

@@ -109,18 +109,22 @@ class DelcourtSpider(scrapy.Spider):
         # response
         yield {
             'objectID': isbn,
+            'isbn': isbn,
             'publisher': 'Delcourt',
             'url': response.url,
             'title': titlify(details.h1.text.strip()),
-            'summary': soup.find('div', class_='resume').text.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
-            'cover': soup.find('div', class_='visual').a['href'],
-            'samples': samples,
             'series': series,
+            'volume': None,
+            'summary': soup.find('div', class_='resume').text.replace('\n', ' ').replace('\t', ' ').replace('\r', '').strip(),
             'date': '-'.join(details.find('span', class_='published_at').text.strip().split(': ')[-1].split('/')[::-1]),
-            'price': price,
-            'isbn': isbn,
             'illustrators': peoplify(meta.get('Illustrateur', meta.get('Dessinateur', '')).split(',')),
             'writers': peoplify(meta.get('Scénariste', '').split(',')),
-            'black_and_white': meta.get('Coloriste') is None,
-            'website': website
+            'cover': soup.find('div', class_='visual').a['href'],
+            'samples': samples,
+
+            'misc': {
+                'price': price,
+                'black_and_white': meta.get('Coloriste') is None,
+                'website': website
+            }
         }
