@@ -82,6 +82,11 @@ class GlenatSpider(scrapy.Spider):
             cover = None
 
         try:
+            tags = [x.text.lower() for x in soup.find('div', class_='field-name-hw-livre-mots-cles').find_all('div', class_='field-item')]
+        except:
+            tags = []
+
+        try:
             categories = [x.text.lower() for x in infos.find('div', class_='field-name-hw-livre-collections').find_all('div', class_='field-items')]
         except:
             pass
@@ -103,12 +108,13 @@ class GlenatSpider(scrapy.Spider):
 
         writers = []
         illustrators = []
-        for intervention in soup.find_all('div', class_='field-collection-item-hw-interventions'):
-            fields = [x.text for x in intervention.find_all('div', class_='field-items')]
-            if fields[0] == 'Scénariste':
-                writers = fields[1:]
+        for div in soup.find_all('div', class_='field-collection-item-hw-interventions'):
+            intervention = div.find('div', class_='field-item').text
+            artists = [x.text for x in div.find_all('a')]
+            if intervention in (u'Scénariste', 'Auteur', u"D'après l'oeuvre de"):
+                writers.extend(artists)
             else:
-                illustrators.extend(fields[1:])
+                illustrators.extend(artists)
 
         if soup.find('div', id="block-views-liseuse-block") is not None:
             samples = ['https://www.glenat.com/sites/default/files/liseuse/{ean}/files/assets/common/page-html5-substrates/page00{page:02d}_4.jpg'.format(ean=ean, page=page)
@@ -117,6 +123,14 @@ class GlenatSpider(scrapy.Spider):
         else:
             samples = []
 
+
+        try:
+            ps = soup.find('div', class_='field-name-hw-presentation-editoriale').find_all('p')
+            if ps[0].find('b'):
+                ps = ps[1:]
+            summary = ' '.join(p.text for p in ps)
+        except:
+            summary = None
 
         # response
         yield {
@@ -127,15 +141,15 @@ class GlenatSpider(scrapy.Spider):
             'title': title,
             'series': series,
             'volume': volume,
-            'summary': soup.find('div', class_='field-name-hw-presentation-editoriale').text,
+            'summary': summary,
             'date': date,
-            'illustrators': illustrators,
-            'writers': writers,
+            'illustrators': list(set(illustrators)),
+            'writers': list(set(writers)),
             'cover': cover,
             'samples': samples,
 
             'misc': {
-                'tags': categories,
+                'tags': tags,
                 'pages': pages,
                 'website': website,
                 'price': {},  # cannot extract price; seems that the price is generated from js
