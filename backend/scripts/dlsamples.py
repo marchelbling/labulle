@@ -47,4 +47,3 @@ if __name__ == '__main__':
         for line in lines:
             comic = json.loads(line)
             download(comic, storage)
-

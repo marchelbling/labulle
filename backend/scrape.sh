@@ -24,15 +24,15 @@ function scrape {
 
     # fs layout
     local scripts="${root}/backend/scripts"
-    local storage="${root}/data/img"
-    local folder="${root}/data/${scraper}"
+    local images="${root}/data/img"
+    local records="${root}/data/records/${scraper}"
 
-    local comics="${folder}/jl"
-    local diff="${folder}/diff"
-    local log="${folder}/log"
-    local err="${folder}/err"
+    local comics="${records}/jl"
+    local diff="${records}/diff"
+    local log="${records}/log"
+    local err="${records}/err"
 
-    mkdir -p "${folder}"
+    mkdir -p "${records}"
 
     # scrape
     scrapy crawl ${scraper} -t jl -o "${comics}" >>"${log}" 2>&1
@@ -42,7 +42,7 @@ function scrape {
     ./${scripts}/algdiff.py --data "${comics}" >"${diff}" 2>>"${err}"
 
     # fetch cover/samples
-    ./${scripts}/dlsamples.py "${diff}" "${storage}"
+    ./${scripts}/dlsamples.py "${diff}" "${images}"
 
      # upload diff
     ./${scripts}/algupload.py --data "${diff}" >>"${log}" 2>>"${err}"

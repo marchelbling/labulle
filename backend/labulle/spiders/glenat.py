@@ -54,21 +54,25 @@ class GlenatSpider(scrapy.Spider):
 
         # soup.find('div', class_='field-name-hw-livre-titre-couv').text
         divtitle = soup.find('div', class_='group-title')
+        title = None
+        series = None
+        volume = None
+        website = None
         try:
             div = divtitle.find('div', class_='field-name-hw-livre-serie')
             website = urljoin(self.__class__.base_url, div.a['href'])
             series = div.text
         except:
             title = divtitle.find('div', class_='field-name-hw-livre-titre-couv').text.strip()
-            series = None
-            volume = None
-            website = None
         else:
-            title = divtitle.find('div', class_='field-name-hw-livre-sous-titre').text
             try:
+                title = divtitle.find('div', class_='field-name-hw-livre-sous-titre').text
                 volume = int(divtitle.find('div', class_='field-name-hw-livre-titre-couv').text.split('Tome')[-1].strip())
             except:
-                pass
+                try:
+                    title = divtitle.find('div', class_='field-name-hw-livre-titre-couv').text
+                except:
+                    pass
 
         try:
             # FIXME: this retrieves a lower res image than possible
@@ -106,6 +110,13 @@ class GlenatSpider(scrapy.Spider):
             else:
                 illustrators.extend(fields[1:])
 
+        if soup.find('div', id="block-views-liseuse-block") is not None:
+            samples = ['https://www.glenat.com/sites/default/files/liseuse/{ean}/files/assets/common/page-html5-substrates/page00{page:02d}_4.jpg'.format(ean=ean, page=page)
+                       for page in range(1, 13)]
+            cover, samples = samples[0], samples[1:]
+        else:
+            samples = []
+
 
         # response
         yield {
@@ -121,7 +132,7 @@ class GlenatSpider(scrapy.Spider):
             'illustrators': illustrators,
             'writers': writers,
             'cover': cover,
-            'samples': [],
+            'samples': samples,
 
             'misc': {
                 'tags': categories,

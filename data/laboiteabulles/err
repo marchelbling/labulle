@@ -1,2 +1,0 @@
-./scrape.sh: line 42: .//home/marc/labulle/backend/scripts/algdiff.py: No such file or directory
-./scrape.sh: line 48: .//home/marc/labulle/backend/scripts/algupload.py: No such file or directory
