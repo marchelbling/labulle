@@ -10,8 +10,14 @@ Scraping publishers websites to build a clean "bande dessinée" API!
 
 ## Commands
 
-* crawl "akileos": `scrapy crawl akileos -o "data/akileos/$(date +%Y-%m-%d).jl"`
-* crawl "la boîte à bulles": `scrapy crawl laboiteabulles -o "data/laboiteabulles/$(date +%Y-%m-%d).jl"`
+General syntax:
+```
+$ ./backend/cli.sh <actions>... <editors>...
+```
+
+where:
+* `<actions>` is a list of elements from `[scrape, diff, download, upload, commit, deploy]`.
+* `<editors>` is any sublist from the implemented editors. Defaults to all implemented editors.
 
 
 ## List of publishers
